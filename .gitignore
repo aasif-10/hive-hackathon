@@ -11,16 +11,10 @@ __pycache__/
 venv/
 *.log
 
-# Dados temporários
+# Temp files
 *.tmp
 *.bak
 *.swp
-
-# Modelos e resultados gerados
-model/*.joblib
-
-# CSVs gerados em produção
-data/*.csv
 
 # Node.js / JavaScript
 node_modules/
@@ -34,6 +28,7 @@ whatsapp-bot/.wwebjs_auth/
 whatsapp-bot/.wwebjs_cache/
 whatsapp-bot/.local-chromium/
 whatsapp-bot/audios/
+whatsapp-bot/qr-code.png
 
 # IDE
 .idea/

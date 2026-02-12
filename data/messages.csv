@@ -1,0 +1,36 @@
+message,label
+"Your bank account will be blocked today. Verify immediately by sending OTP.",scam
+"Urgent! Your UPI payment is pending. Click this link to verify: bit.ly/verify123",scam
+"Hello sir your account has been suspended. Send Rs.10 to verify@okhdfc to reactivate.",scam
+"IMPORTANT: RBI has blocked your account. Call 9876543210 now or face legal action.",scam
+"Your KYC is incomplete. Download this app and enter your PIN to update: fakebank.com",scam
+"Congratulations! You won Rs.50 lakhs lottery. Pay Rs.5000 processing fee to claim@paytm",scam
+"URGENT ACTION REQUIRED: Income Tax notice. Pay penalty immediately to avoid arrest.",scam
+"Your electricity will be disconnected in 24 hours. Send payment to power@phonepe now.",scam
+"Bank alert: Suspicious activity detected. Share OTP 123456 to secure your account.",scam
+"Final warning! Your Aadhaar will be deactivated. Update details at govt-kyc-update.com",scam
+"Police case filed against you. Pay fine Rs.10000 to legal@gpay to close case.",scam
+"Your TRAI number will be blocked. Verify by calling customer care 9123456789.",scam
+"Account suspended due to non-KYC. Transfer Rs.1 to admin@okaxis for verification.",scam
+"Immediate attention needed. Your PAN card is blocked. Click here to reactivate now.",scam
+"Government subsidy of Rs.25000 approved. Pay Rs.500 processing to subsidy@upi",scam
+"Hi, how are you doing today?",legitimate
+"Thanks for lunch yesterday! It was great catching up with you.",legitimate
+"Can we reschedule our meeting to tomorrow at 3pm?",legitimate
+"Happy birthday! Hope you have a wonderful day!",legitimate
+"Did you watch the cricket match last night? What a game!",legitimate
+"I'm running 10 minutes late. Will be there soon.",legitimate
+"Please review the attached document and let me know your thoughts.",legitimate
+"The project deadline has been extended to next Friday.",legitimate
+"Reminder: Team meeting at 2pm in conference room B.",legitimate
+"Great presentation today! Really impressive work.",legitimate
+"Can you send me the report when you get a chance?",legitimate
+"Let's go for coffee this weekend if you're free.",legitimate
+"Thanks for your help with the issue. Problem is resolved now.",legitimate
+"Your package has been delivered to the reception desk.",legitimate
+"Welcome to our service! Your subscription is now active.",legitimate
+"Meeting minutes from today's discussion are attached.",legitimate
+"Just checking in to see how the project is progressing.",legitimate
+"Congratulations on your promotion! Well deserved!",legitimate
+"The weather forecast shows rain tomorrow. Carry an umbrella.",legitimate
+"Your appointment is confirmed for Monday at 10am.",legitimate

@@ -2,30 +2,30 @@
 import joblib
 import numpy as np
 
-# Carga dos componentes treinados
+# Load trained components
 try:
     model = joblib.load("model/scam_detector.joblib")
     vectorizer = joblib.load("model/vectorizer.joblib")
 except Exception as e:
-    raise RuntimeError(f"❌ Falha ao carregar modelo ou vetorizador: {e}")
+    raise RuntimeError(f"❌ Failed to load model or vectorizer: {e}")
 
-# Mapeamento de rótulos (caso use 'golpe', 'fraude', 'legitima' etc.)
+# Label mapping
 LABELS = {
-    "high": "Mensagem identificada com padrão de golpe",
-    "golpe": "Mensagem identificada com padrão de golpe",
-    "fraude": "Mensagem identificada com padrão de golpe",
-    "low": "Mensagem sem sinais evidentes de golpe",
-    "legitima": "Mensagem sem sinais evidentes de golpe",
-    "mensagem_legitima": "Mensagem sem sinais evidentes de golpe"
+    "high": "Message identified as scam",
+    "scam": "Message identified as scam",
+    "fraud": "Message identified as scam",
+    "low": "Message appears legitimate",
+    "legitimate": "Message appears legitimate",
+    "safe": "Message appears legitimate"
 }
 
 def predict_message(message: str):
     vectorized = vectorizer.transform([message])
     prediction = model.predict(vectorized)[0]
-    proba = np.max(model.predict_proba(vectorized))  # maior score entre as classes
+    proba = np.max(model.predict_proba(vectorized))  # highest score among classes
 
-    # Definir motivo baseado no rótulo retornado
-    reason = LABELS.get(prediction.lower(), "Resultado indefinido pela IA")
+    # Define reason based on returned label
+    reason = LABELS.get(prediction.lower(), "Result undefined by AI")
 
     return {
         "risk": prediction,
