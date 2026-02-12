@@ -1,68 +1,124 @@
 <p align="center">
-  <img src=".github/banner-safetalk-ai.svg" alt="SafeTX-AI Banner" width="600"/><br>
-
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-brightgreen"/>
-  <img alt="Issues" src="https://img.shields.io/github/issues/cshillrj46/SafeTX-AI?color=informational"/>
-  <img alt="Forks" src="https://img.shields.io/github/forks/cshillrj46/SafeTX-AI?style=social"/>
-  <img alt="Stars" src="https://img.shields.io/github/stars/cshillrj46/SafeTX-AI?style=social"/>
-  <img alt="Last Commit" src="https://img.shields.io/github/last-commit/cshillrj46/SafeTX-AI?color=blueviolet"/>
-  <img alt="Python Version" src="https://img.shields.io/badge/python-3.10+-blue"/><br>
-
-  <img alt="Built with" src="https://img.shields.io/badge/Built%20with-FastAPI%20%7C%20React%20%7C%20Tailwind-blueviolet"/>
-  <img alt="AI Powered" src="https://img.shields.io/badge/AI-Powered-blue"/>
-  <img alt="Security Focused" src="https://img.shields.io/badge/Security-Focused-critical"/>
-  <img alt="Twitter" src="https://img.shields.io/badge/Twitter-@SafeTalkAI-blue?logo=twitter"/>
-  <img alt="Status" src="https://img.shields.io/badge/Status-Stable-brightgreen"/>
+  <h1 align="center">H.I.V.E.</h1>
+  <h3 align="center">Heuristic Intelligence & Virtual Entrapment</h3>
+  <p align="center">AI-Powered Scam Honeypot System built on SafeTalk-AI</p>
+  <p align="center">
+    <img alt="Python" src="https://img.shields.io/badge/python-3.11+-blue"/>
+    <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-0.100+-green"/>
+    <img alt="Gemini" src="https://img.shields.io/badge/Google%20Gemini-2.5--flash-orange"/>
+    <img alt="License" src="https://img.shields.io/badge/license-MIT-brightgreen"/>
+    <img alt="Status" src="https://img.shields.io/badge/Status-Hackathon%20Ready-blueviolet"/>
+  </p>
 </p>
 
+---
 
+## The Problem
 
-**🛡️🤖 SafeTalk-AI** is a cutting-edge, real-time AI chatbot for WhatsApp, designed to automatically detect and prevent scams and social engineering attacks through advanced natural language processing. This project combines FastAPI, Python, machine learning and WhatsApp Web automation to deliver a market-ready, scalable and highly effective antifraud solution.
+Millions of people fall victim to phone/messaging scams every year. Scammers use urgency, fear, and social engineering to steal money and personal information. Current solutions only **block or warn** — they don't fight back.
+
+## Our Solution
+
+**H.I.V.E.** doesn't just detect scams — it **engages scammers with realistic AI personas** to waste their time, extract their identities (UPI IDs, phone numbers, bank details), and gather evidence for reporting.
+
+Built on top of SafeTalk-AI's ML-based scam detection, H.I.V.E. adds an intelligent honeypot layer that turns the tables on scammers.
 
 ---
 
-## 🚀 Features
+## How It Works
 
-- **Real-time WhatsApp Monitoring:** Intercepts and analyzes incoming messages, voice notes and media in real time.
-- **AI-Powered Scam Detection:** Uses a trained ML model to classify messages as legitimate or scam, with confidence scores.
-- **Audio Transcription:** Converts voice messages to text and analyzes them for scam content (powered by Whisper).
-- **Automated Alerts:** Instantly notifies users and administrators of suspected scams.
-- **Easy Integration:** Ready to deploy and scale for individuals, businesses, or integration with exchanges and fintechs.
-- **Extensible Architecture:** Modular backend (FastAPI) and bot (Node.js/whatsapp-web.js) ready for future improvements.
-
----
-
-## 🏆 Why SafeTalk-AI?
-
-- **Visionary Solution:** Proactive fraud prevention, not just detection.
-- **Plug & Play:** Simple to set up locally or in the cloud.
-- **Enterprise-Ready:** Perfect for B2B, exchanges, banks, and customer support.
-- **Highly Customizable:** Retrain the model or expand rules as new scams appear.
-- **Free and Open Source:** Perfect for learning, adaptation, and business adoption.
-
----
-
-## 📦 Project Structure
 ```
-/backend              # FastAPI backend, ML logic
-/data/messages.csv    # Training dataset (no sensitive data)
-/model/*.joblib       # Trained AI model and vectorizer
-/whatsapp-bot         # WhatsApp Web integration (Node.js)
-  └── audios/         # Temporary audio storage (ignored)
-/docs                 # (Optional) Visuals, diagrams, etc.
-requirements.txt      # Python dependencies
-package.json          # Node dependencies (bot)
-/.github              # Workflows, issue templates (optional)
+Scammer sends message
+        │
+        ▼
+┌─────────────────────┐
+│  SafeTalk-AI ML      │  ← Random Forest + TF-IDF classifier
+│  Scam Detection      │     Detects scam vs legitimate
+└────────┬────────────┘
+         │ scam detected
+         ▼
+┌─────────────────────┐
+│  H.I.V.E. Honeypot  │  ← Gemini AI-powered personas
+│  Auto-Engagement     │     Engages scammer in conversation
+└────────┬────────────┘
+         │ every turn
+         ▼
+┌─────────────────────┐
+│  Intelligence        │  ← Regex-based extraction
+│  Extraction          │     UPI IDs, phone numbers, links
+└─────────────────────┘
 ```
+
+1. **Detect** — ML model classifies incoming messages as scam or legitimate
+2. **Engage** — AI persona (confused retiree, worried housewife, etc.) replies naturally to the scammer
+3. **Extract** — System captures UPI IDs, phone numbers, phishing links, and suspicious keywords from the conversation
+4. **Report** — Collected intelligence can be forwarded to authorities
+
 ---
 
-## ⚡️ Quickstart
+## Key Features
 
-### 1. Clone the repository
+| Feature | Description |
+|---------|-------------|
+| **ML Scam Detection** | Random Forest classifier with TF-IDF vectorization identifies scam messages with confidence scores |
+| **AI Honeypot Personas** | 5 unique personas powered by Google Gemini that engage scammers in realistic multi-turn conversations |
+| **Intelligence Extraction** | Automatically captures UPI IDs, phone numbers, bank accounts, and phishing links |
+| **WhatsApp Integration** | Full WhatsApp Web bot that auto-detects and engages scammers in real-time |
+| **Audio Transcription** | Voice messages transcribed via Whisper and analyzed for scam content |
+| **No Fallback Responses** | Every reply is AI-generated and unique — no canned responses |
+
+---
+
+## Tech Stack
+
+- **Backend:** Python, FastAPI, Uvicorn
+- **ML Model:** scikit-learn (Random Forest + TF-IDF)
+- **AI Conversation:** Google Gemini 2.5 Flash via `google-genai`
+- **WhatsApp Bot:** Node.js, whatsapp-web.js, Puppeteer
+- **Audio:** OpenAI Whisper
+- **Data:** In-memory (Python dicts), joblib model persistence
+
+---
+
+## Project Structure
+
+```
+├── backend/
+│   ├── main.py                 # FastAPI app with all endpoints
+│   ├── model.py                # ML prediction (scam/legitimate)
+│   ├── schemas.py              # Pydantic request/response models
+│   └── train_model.py          # Train the Random Forest classifier
+├── app/core/
+│   ├── conversation_agent.py   # Gemini-powered AI conversation engine
+│   ├── persona_manager.py      # 5 AI personas with system prompts
+│   ├── intelligence_extractor.py # Regex extraction (UPI, phones, links)
+│   └── scam_detector.py        # Rule-based detection (supplementary)
+├── whatsapp-bot/
+│   └── whatsapp-web.js         # WhatsApp bot with honeypot integration
+├── data/
+│   └── messages.csv            # Training dataset
+├── model/
+│   ├── scam_detector.joblib    # Trained ML model
+│   └── vectorizer.joblib       # TF-IDF vectorizer
+├── transcribe.py               # Whisper audio transcription
+├── .env                        # API keys (not committed)
+└── requirements.txt            # Python dependencies
+```
+
+---
+
+## Quick Start
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- Google Gemini API key ([get one free](https://aistudio.google.com/apikey))
+
+### 1. Clone & Setup
 
 ```bash
-git clone https://github.com/cshillrj46/SafeTalk-AI.git
-cd SafeTalk-AI
+git clone https://github.com/aasif-10/hive-hackathon.git
+cd hive-hackathon
 
 python -m venv .venv
 # Windows:
@@ -70,57 +126,120 @@ python -m venv .venv
 # Linux/Mac:
 source .venv/bin/activate
 
-pip install --upgrade pip
 pip install -r requirements.txt
+```
 
+### 2. Configure API Key
+
+Create a `.env` file in the root:
+```env
+GEMINI_API_KEY=your_gemini_api_key_here
+API_KEY=hive-secret-key-2025
+```
+
+### 3. Train the ML Model
+
+```bash
 python backend/train_model.py
+```
 
-uvicorn backend.main:app --reload
+### 4. Start the Backend
 
+```bash
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
+```
+
+### 5. Start the WhatsApp Bot (optional)
+
+```bash
 cd whatsapp-bot
 npm install
 node whatsapp-web.js
+```
 
-A browser will open with a QR Code. Scan it using your WhatsApp to connect the bot.
+Scan the QR code at `http://localhost:3000/qr` with your WhatsApp.
 
-7. Test the Bot!
-Send scam and legit messages or voice notes to your WhatsApp connected to the bot.
+### 6. Test
 
-The bot will transcribe audio, analyze text and automatically alert on any suspicious content.
+```bash
+python test_terminal.py
+```
 
-🧠 How it works
-Incoming message/voice note: The bot receives content via WhatsApp Web.
+---
 
-Audio transcription: Voice notes are converted to text (Whisper).
+## API Endpoints
 
-AI analysis: The backend receives the message, extracts features and predicts scam/legitimate status.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/analyze-text` | Detect scam using ML model |
+| `POST` | `/honeypot/reply` | Generate AI persona reply to scammer |
+| `POST` | `/honeypot/extract` | Extract intelligence from message |
+| `GET`  | `/health` | Service health check |
 
-Response: Alerts are sent back to the WhatsApp user if a scam is detected, with details and confidence score.
+### Example: Detect + Engage
 
-💡 Customization
-Improve detection: Add more samples to data/messages.csv and retrain.
+```bash
+# Step 1: Detect scam
+curl -X POST http://localhost:8000/analyze-text \
+  -H "Content-Type: application/json" \
+  -d '{"message": "Your bank account will be blocked. Send OTP now."}'
 
-Add business logic: Customize backend/model.py for new scam patterns.
+# Step 2: Engage with honeypot
+curl -X POST http://localhost:8000/honeypot/reply \
+  -H "Content-Type: application/json" \
+  -d '{"scammer_message": "Send Rs.10 to verify@okhdfc now!", "scam_type": "bank_fraud", "conversation_history": []}'
+```
 
-Change notification targets: Adapt the bot to forward alerts to admin numbers, emails or external APIs.
+---
 
-🤝 Contributing
-Pull requests, issue reports and suggestions are welcome!
-If you use or adapt SafeTalk-AI for business, a mention or star is appreciated.
+## AI Personas
 
-🔒 Security Notice
-Production Use: If deploying commercially, set up proper environment variables, secure endpoints, and never expose sensitive training data.
+| Persona | Role | Scam Type | Strategy |
+|---------|------|-----------|----------|
+| **Ramesh** | Worried Retiree, 68 | Bank Fraud | Confused with tech, asks scammer to repeat details |
+| **Priya** | Unsure Housewife, 42 | UPI Fraud | Husband not home, asks for WhatsApp details |
+| **Arjun** | Eager Student, 22 | Phishing | Interested but wants to verify with parents |
+| **Suresh** | Skeptical Shopkeeper, 48 | Lottery | Asks for proof and refund bank details |
+| **Kavitha** | Careful Teacher, 35 | Default | Cooperative but very slow, needs everything repeated |
 
-WhatsApp Bot: Use a dedicated number/account. Excessive automation may risk account ban.
+All personas speak in plain, natural English — no regional words, no robotic responses.
 
-Data: Do NOT share real user conversations in public repositories!
+---
 
-📄 License
+## Sample Conversation
+
+> **Scammer:** Your bank account has been compromised. Send OTP immediately to verify.
+>
+> **Ramesh:** Oh dear, compromised? That sounds serious. I'm not very good with these things. Could you give me your name, so I know who I'm speaking with?
+>
+> **Scammer:** Send Rs.10 to verify@sbifraud to confirm your identity.
+>
+> **Ramesh:** Rs.10? I don't think I've ever done that before. Is that through that phone app thing? I'm not very good with those.
+>
+> **Scammer:** Just call our senior manager at 8899776655.
+>
+> **Ramesh:** Oh, a senior manager? 8899776655, you said? Can you repeat that number for me, please? I need to write it down carefully.
+
+**Intelligence Extracted:** UPI ID `verify@sbifraud`, Phone `8899776655`
+
+---
+
+## WhatsApp Bot Commands
+
+| Command | Action |
+|---------|--------|
+| `!status` | Check bot status and active sessions |
+| `!honeypot on` | Enable auto-engage mode |
+| `!honeypot off` | Disable — alerts only |
+| `!intel` | Show extracted intelligence for current chat |
+| `!reset` | Clear honeypot session |
+
+---
+
+## Team
+
+Built for a national hackathon by **Team H.I.V.E.**
+
+## License
+
 MIT License
-
-👨‍💻 Author
-Developed by Cristiano Hill & OpenAI GPT-4o
-Feel free to connect on LinkedIn or GitHub.
-
-📣 Like this project? Star, fork or share with your network!
-SafeTalk-AI: Bringing AI-powered security to your daily conversations.
