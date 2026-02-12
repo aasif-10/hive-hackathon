@@ -71,7 +71,7 @@ client.on("ready", async () => {
   console.log("My number is:", BOT_NUMBER);
   await client.sendMessage(
     BOT_NUMBER,
-    "[SafeTalk-AI + H.I.V.E.] Bot started.\nCommands:\n!status - check bot status\n!honeypot on - enable auto-engage\n!honeypot off - disable\n!intel - show extracted intelligence",
+    "[SafeTalk-AI + H.I.V.E.] Bot started.\nCommands:\n!status - check bot status\n!honeypot on/off - toggle auto-engage\n!intel - show extracted intelligence\n!reset - clear session\n!block <number> - block a contact\n!db stats - fingerprint DB overview\n!db list - top scammers\n!db lookup <id> - search by phone/UPI\n!db flag <fp> - flag a scammer\n!db report <fp> - mark as reported\n\nAuto-block: ON (triggers after 2+ identifiers collected)",
   );
 });
 
@@ -103,6 +103,62 @@ function guessScamType(text) {
 
 // Whether honeypot auto-engage is globally on (default: on)
 let honeypotEnabled = true;
+
+// Auto-block: block scammer after collecting enough intel
+const AUTO_BLOCK_THRESHOLD = 4; // minimum unique identifiers (phone, UPI, bank) to trigger block
+
+async function blockScammer(chatId, reason) {
+  try {
+    const contact = await client.getContactById(chatId);
+    if (!contact) {
+      console.log(`Cannot find contact ${chatId} to block.`);
+      return false;
+    }
+
+    await contact.block();
+    console.log(`BLOCKED scammer: ${chatId} — Reason: ${reason}`);
+
+    // End honeypot session
+    const session = honeypotSessions[chatId];
+    if (session) {
+      session.active = false;
+      session.blockedAt = Date.now();
+    }
+
+    // Update DB status to reported
+    if (session?.fingerprint) {
+      try {
+        await axios.post(`${API_BASE}/fingerprint/status`, {
+          fingerprint: session.fingerprint,
+          status: "reported",
+          notes: `Auto-blocked via WhatsApp. Reason: ${reason}`,
+        });
+      } catch (e) {
+        console.error("DB status update error:", e.message);
+      }
+    }
+
+    // Notify bot owner
+    const intel = session?.intel;
+    let blockMsg = `[SCAMMER BLOCKED]\nChat: ${chatId}\nReason: ${reason}`;
+    if (session?.fingerprint)
+      blockMsg += `\nFingerprint: ${session.fingerprint}`;
+    if (session?.threatScore)
+      blockMsg += `\nThreat Score: ${session.threatScore}/100`;
+    if (intel) {
+      blockMsg += `\nUPI: ${intel.upiIds?.join(", ") || "-"}`;
+      blockMsg += `\nPhones: ${intel.phoneNumbers?.join(", ") || "-"}`;
+      blockMsg += `\nLinks: ${intel.phishingLinks?.join(", ") || "-"}`;
+    }
+    blockMsg += `\nConversation turns: ${session?.history?.length || 0}`;
+    await client.sendMessage(BOT_NUMBER, blockMsg);
+
+    return true;
+  } catch (err) {
+    console.error("Block error:", err.message);
+    return false;
+  }
+}
 
 // ── Message handler ──────────────────────────────────────
 
@@ -156,10 +212,16 @@ client.on("message", async (msg) => {
         return;
       }
       const i = session.intel;
-      await client.sendMessage(
-        chatId,
-        `[Intelligence Report]\nUPI IDs: ${i.upiIds?.join(", ") || "none"}\nPhone Numbers: ${i.phoneNumbers?.join(", ") || "none"}\nLinks: ${i.phishingLinks?.join(", ") || "none"}\nKeywords: ${i.suspiciousKeywords?.join(", ") || "none"}\nMessages tracked: ${session.history?.length || 0}`,
-      );
+      let intelMsg = `[Intelligence Report]\nUPI IDs: ${i.upiIds?.join(", ") || "none"}\nPhone Numbers: ${i.phoneNumbers?.join(", ") || "none"}\nLinks: ${i.phishingLinks?.join(", ") || "none"}\nKeywords: ${i.suspiciousKeywords?.join(", ") || "none"}\nMessages tracked: ${session.history?.length || 0}`;
+
+      // Show fingerprint if available
+      if (session.fingerprint) {
+        intelMsg += `\n\nFingerprint: ${session.fingerprint}`;
+        intelMsg += `\nThreat Score: ${session.threatScore || "—"}`;
+        intelMsg += `\nEncounters: ${session.encounterCount || 1}`;
+        intelMsg += `\nStatus: ${session.scammerStatus || "active"}`;
+      }
+      await client.sendMessage(chatId, intelMsg);
       return;
     }
 
@@ -169,6 +231,140 @@ client.on("message", async (msg) => {
         chatId,
         "[SafeTalk-AI] Honeypot session reset for this chat.",
       );
+      return;
+    }
+
+    if (cmd.startsWith("!block ")) {
+      const targetId = cmd.replace("!block ", "").trim();
+      // Accept raw number or full chat ID
+      const fullId = targetId.includes("@") ? targetId : `${targetId}@c.us`;
+      const success = await blockScammer(
+        fullId,
+        "Manual block via !block command",
+      );
+      await client.sendMessage(
+        chatId,
+        success
+          ? `[SafeTalk-AI] Blocked ${fullId} and saved to DB.`
+          : `[SafeTalk-AI] Failed to block ${fullId}. Contact may not exist.`,
+      );
+      return;
+    }
+
+    if (cmd === "!db stats") {
+      try {
+        const { data: stats } = await axios.get(
+          `${API_BASE}/fingerprint/stats`,
+        );
+        await client.sendMessage(
+          chatId,
+          `[Fingerprint DB Stats]\nTotal scammers: ${stats.total_scammers}\nActive: ${stats.active} | Flagged: ${stats.flagged} | Reported: ${stats.reported}\nTotal sessions: ${stats.total_sessions}\nIdentifiers collected: ${stats.total_identifiers}\nHighest threat: ${stats.highest_threat?.fingerprint || "—"} (${stats.highest_threat?.score || 0}/100)`,
+        );
+      } catch (e) {
+        await client.sendMessage(
+          chatId,
+          "[SafeTalk-AI] Error fetching DB stats.",
+        );
+      }
+      return;
+    }
+
+    if (cmd.startsWith("!db lookup ")) {
+      const identifier = cmd.replace("!db lookup ", "").trim();
+      try {
+        const { data } = await axios.get(
+          `${API_BASE}/fingerprint/lookup/${encodeURIComponent(identifier)}`,
+        );
+        if (data.found) {
+          const s = data.scammer;
+          await client.sendMessage(
+            chatId,
+            `[Scammer Found]\nFingerprint: ${s.fingerprint}\nThreat Score: ${s.threat_score}/100\nEncounters: ${s.encounter_count}\nFirst seen: ${s.first_seen}\nLast seen: ${s.last_seen}\nScam types: ${s.scam_types?.join(", ")}\nIdentifiers: ${s.identifiers?.map((i) => `${i.type}:${i.value}`).join(", ")}\nStatus: ${s.status}`,
+          );
+        } else {
+          await client.sendMessage(
+            chatId,
+            `[SafeTalk-AI] No scammer found for "${identifier}".`,
+          );
+        }
+      } catch (e) {
+        await client.sendMessage(
+          chatId,
+          "[SafeTalk-AI] Error looking up identifier.",
+        );
+      }
+      return;
+    }
+
+    if (cmd === "!db list") {
+      try {
+        const { data } = await axios.get(
+          `${API_BASE}/fingerprint/all?limit=10`,
+        );
+        if (!data.count) {
+          await client.sendMessage(
+            chatId,
+            "[SafeTalk-AI] No scammers in database yet.",
+          );
+          return;
+        }
+        let msg = `[Known Scammers — Top ${data.count}]\n`;
+        data.scammers.forEach((s, i) => {
+          msg += `\n${i + 1}. ${s.fingerprint} — Score: ${s.threat_score} | ${s.encounter_count} encounters | ${s.status}`;
+        });
+        await client.sendMessage(chatId, msg);
+      } catch (e) {
+        await client.sendMessage(
+          chatId,
+          "[SafeTalk-AI] Error fetching scammer list.",
+        );
+      }
+      return;
+    }
+
+    if (cmd.startsWith("!db flag ")) {
+      const fp = cmd.replace("!db flag ", "").trim();
+      try {
+        const { data } = await axios.post(`${API_BASE}/fingerprint/status`, {
+          fingerprint: fp,
+          status: "flagged",
+          notes: "Flagged via WhatsApp bot",
+        });
+        await client.sendMessage(
+          chatId,
+          data.success
+            ? `[SafeTalk-AI] Scammer ${fp} flagged.`
+            : `[SafeTalk-AI] ${data.message}`,
+        );
+      } catch (e) {
+        await client.sendMessage(
+          chatId,
+          "[SafeTalk-AI] Error flagging scammer.",
+        );
+      }
+      return;
+    }
+
+    if (cmd.startsWith("!db report ")) {
+      const fp = cmd.replace("!db report ", "").trim();
+      try {
+        const { data } = await axios.post(`${API_BASE}/fingerprint/status`, {
+          fingerprint: fp,
+          status: "reported",
+          notes: "Reported to authorities via WhatsApp bot",
+        });
+        await client.sendMessage(
+          chatId,
+          data.success
+            ? `[SafeTalk-AI] Scammer ${fp} marked as reported.`
+            : `[SafeTalk-AI] ${data.message}`,
+        );
+      } catch (e) {
+        await client.sendMessage(
+          chatId,
+          "[SafeTalk-AI] Error reporting scammer.",
+        );
+      }
       return;
     }
 
@@ -311,11 +507,78 @@ async function continueHoneypot(scammerText, chatId) {
     if (hasIntel) {
       console.log("Intelligence update:", JSON.stringify(intel, null, 2));
 
+      // Store fingerprint in database
+      try {
+        const { data: fp } = await axios.post(`${API_BASE}/fingerprint/store`, {
+          intel: intel,
+          scam_type: session.scamType,
+          chat_id: chatId,
+          message_count: session.history.length,
+        });
+
+        if (fp.fingerprint) {
+          session.fingerprint = fp.fingerprint;
+          session.threatScore = fp.threat_score;
+          session.encounterCount = fp.encounter_count;
+          session.scammerStatus = fp.status;
+
+          const isKnown = !fp.is_new_scammer;
+          const fpMsg = isKnown
+            ? `[DB Match] Known scammer re-identified!\nFingerprint: ${fp.fingerprint}\nThreat Score: ${fp.threat_score}/100\nEncounters: ${fp.encounter_count}\nScam Types: ${fp.scam_types?.join(", ")}`
+            : `[New Scammer Fingerprinted]\nFingerprint: ${fp.fingerprint}\nThreat Score: ${fp.threat_score}/100`;
+
+          console.log(fpMsg);
+
+          // Notify bot owner about fingerprint
+          await client.sendMessage(BOT_NUMBER, `${fpMsg}\nChat: ${chatId}`);
+        }
+      } catch (fpErr) {
+        console.error("Fingerprint store error:", fpErr.message);
+      }
+
       // Notify bot owner about new intel
       await client.sendMessage(
         BOT_NUMBER,
         `[Intel Update - ${chatId}]\nUPI: ${intel.upiIds?.join(", ") || "-"}\nPhones: ${intel.phoneNumbers?.join(", ") || "-"}\nLinks: ${intel.phishingLinks?.join(", ") || "-"}`,
       );
+
+      // Auto-block check: count unique hard identifiers (phone, UPI, bank account)
+      const uniqueIdentifiers = new Set([
+        ...(intel.upiIds || []),
+        ...(intel.phoneNumbers || []),
+        ...(intel.bankAccounts || []),
+      ]);
+
+      const turnCount = session.history.filter(
+        (m) => m.sender === "scammer",
+      ).length;
+      const identifierCount = uniqueIdentifiers.size;
+
+      // Block if: 4+ unique identifiers collected, OR 6+ scammer turns with at least 1 identifier
+      const shouldBlock =
+        (identifierCount >= AUTO_BLOCK_THRESHOLD ||
+          (turnCount >= 6 && identifierCount >= 1)) &&
+        session.active;
+
+      if (shouldBlock) {
+        const reason =
+          identifierCount >= AUTO_BLOCK_THRESHOLD
+            ? `${identifierCount} identifiers collected (threshold: ${AUTO_BLOCK_THRESHOLD})`
+            : `${turnCount} conversation turns with ${identifierCount} identifier(s)`;
+
+        console.log(`Auto-block triggered for ${chatId} — ${reason}`);
+
+        // Send a final farewell message in character before blocking
+        await client.sendMessage(
+          chatId,
+          "Oh, I think my phone is having some network issues. Let me call you back later.",
+        );
+
+        // Small delay so the message is delivered before block
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        await blockScammer(chatId, `Auto-blocked: ${reason}`);
+      }
     }
   } catch (error) {
     console.error("Honeypot reply error:", error.message);

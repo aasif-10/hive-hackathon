@@ -58,14 +58,14 @@ Scammer sends message
 
 ## Key Features
 
-| Feature | Description |
-|---------|-------------|
-| **ML Scam Detection** | Random Forest classifier with TF-IDF vectorization identifies scam messages with confidence scores |
-| **AI Honeypot Personas** | 5 unique personas powered by Google Gemini that engage scammers in realistic multi-turn conversations |
-| **Intelligence Extraction** | Automatically captures UPI IDs, phone numbers, bank accounts, and phishing links |
-| **WhatsApp Integration** | Full WhatsApp Web bot that auto-detects and engages scammers in real-time |
-| **Audio Transcription** | Voice messages transcribed via Whisper and analyzed for scam content |
-| **No Fallback Responses** | Every reply is AI-generated and unique — no canned responses |
+| Feature                     | Description                                                                                           |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **ML Scam Detection**       | Random Forest classifier with TF-IDF vectorization identifies scam messages with confidence scores    |
+| **AI Honeypot Personas**    | 5 unique personas powered by Google Gemini that engage scammers in realistic multi-turn conversations |
+| **Intelligence Extraction** | Automatically captures UPI IDs, phone numbers, bank accounts, and phishing links                      |
+| **WhatsApp Integration**    | Full WhatsApp Web bot that auto-detects and engages scammers in real-time                             |
+| **Audio Transcription**     | Voice messages transcribed via Whisper and analyzed for scam content                                  |
+| **No Fallback Responses**   | Every reply is AI-generated and unique — no canned responses                                          |
 
 ---
 
@@ -110,6 +110,7 @@ Scammer sends message
 ## Quick Start
 
 ### Prerequisites
+
 - Python 3.11+
 - Node.js 18+
 - Google Gemini API key ([get one free](https://aistudio.google.com/apikey))
@@ -132,6 +133,7 @@ pip install -r requirements.txt
 ### 2. Configure API Key
 
 Create a `.env` file in the root:
+
 ```env
 GEMINI_API_KEY=your_gemini_api_key_here
 API_KEY=hive-secret-key-2025
@@ -169,12 +171,12 @@ python test_terminal.py
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/analyze-text` | Detect scam using ML model |
-| `POST` | `/honeypot/reply` | Generate AI persona reply to scammer |
-| `POST` | `/honeypot/extract` | Extract intelligence from message |
-| `GET`  | `/health` | Service health check |
+| Method | Endpoint            | Description                          |
+| ------ | ------------------- | ------------------------------------ |
+| `POST` | `/analyze-text`     | Detect scam using ML model           |
+| `POST` | `/honeypot/reply`   | Generate AI persona reply to scammer |
+| `POST` | `/honeypot/extract` | Extract intelligence from message    |
+| `GET`  | `/health`           | Service health check                 |
 
 ### Example: Detect + Engage
 
@@ -194,13 +196,13 @@ curl -X POST http://localhost:8000/honeypot/reply \
 
 ## AI Personas
 
-| Persona | Role | Scam Type | Strategy |
-|---------|------|-----------|----------|
-| **Ramesh** | Worried Retiree, 68 | Bank Fraud | Confused with tech, asks scammer to repeat details |
-| **Priya** | Unsure Housewife, 42 | UPI Fraud | Husband not home, asks for WhatsApp details |
-| **Arjun** | Eager Student, 22 | Phishing | Interested but wants to verify with parents |
-| **Suresh** | Skeptical Shopkeeper, 48 | Lottery | Asks for proof and refund bank details |
-| **Kavitha** | Careful Teacher, 35 | Default | Cooperative but very slow, needs everything repeated |
+| Persona     | Role                     | Scam Type  | Strategy                                             |
+| ----------- | ------------------------ | ---------- | ---------------------------------------------------- |
+| **Ramesh**  | Worried Retiree, 68      | Bank Fraud | Confused with tech, asks scammer to repeat details   |
+| **Priya**   | Unsure Housewife, 42     | UPI Fraud  | Husband not home, asks for WhatsApp details          |
+| **Arjun**   | Eager Student, 22        | Phishing   | Interested but wants to verify with parents          |
+| **Suresh**  | Skeptical Shopkeeper, 48 | Lottery    | Asks for proof and refund bank details               |
+| **Kavitha** | Careful Teacher, 35      | Default    | Cooperative but very slow, needs everything repeated |
 
 All personas speak in plain, natural English — no regional words, no robotic responses.
 
@@ -226,13 +228,13 @@ All personas speak in plain, natural English — no regional words, no robotic r
 
 ## WhatsApp Bot Commands
 
-| Command | Action |
-|---------|--------|
-| `!status` | Check bot status and active sessions |
-| `!honeypot on` | Enable auto-engage mode |
-| `!honeypot off` | Disable — alerts only |
-| `!intel` | Show extracted intelligence for current chat |
-| `!reset` | Clear honeypot session |
+| Command         | Action                                       |
+| --------------- | -------------------------------------------- |
+| `!status`       | Check bot status and active sessions         |
+| `!honeypot on`  | Enable auto-engage mode                      |
+| `!honeypot off` | Disable — alerts only                        |
+| `!intel`        | Show extracted intelligence for current chat |
+| `!reset`        | Clear honeypot session                       |
 
 ---
 
